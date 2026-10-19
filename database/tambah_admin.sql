@@ -1,0 +1,74 @@
+-- ============================================================
+-- TAMBAH AKUN ADMIN LANGSUNG DI TiDB SQL EDITOR
+-- Sistem Presensi Magang (HadirKu)
+-- ============================================================
+--
+-- CARA PAKAI:
+-- 1. Buka TiDB Cloud Console → pilih cluster → SQL Editor
+-- 2. Pilih database yang dikonfigurasi lewat TIDB_DATABASE (.env).
+-- 3. Copy-paste salah satu INSERT di bawah, lalu jalankan
+--
+-- PENTING: Kolom password_hash adalah hasil bcrypt hash.
+--   Untuk generate hash baru, jalankan di terminal proyek:
+--   node -e "const b=require('bcryptjs'); b.hash('passwordbaru',10).then(h=>console.log(h))"
+-- ============================================================
+
+-- ─────────────────────────────────────────────
+-- CONTOH 1: Admin default sistem (kode: 10101010, password: 12341234)
+-- ─────────────────────────────────────────────
+INSERT INTO users (
+  id,
+  name,
+  role,
+  status,
+  joined_date,
+  login_code,
+  password_hash
+) VALUES (
+  'user-admin-1',           -- ID unik (ganti jika sudah ada)
+  'Abdul Rozzak Junaidi', -- Nama lengkap
+  'admin',
+  'active',
+  '2026-01-10',
+  '10101010',               -- Kode login 8 digit (dipakai di Tab Kode/NIM)
+  '$2b$10$1OyoJU/3oeJvbWitoUSORuenG0gmzBsZUHwXCkzkc/69mXH/SDpba' -- bcrypt hash password default
+)
+ON DUPLICATE KEY UPDATE
+  name           = 'Abdul Rozzak Junaidi',
+  role           = VALUES(role),
+  password_hash  = VALUES(password_hash),
+  status         = VALUES(status);
+
+-- ─────────────────────────────────────────────
+-- CONTOH 2: Tambah Admin kedua (password: adminbaru456)
+--   Hash dihasilkan dari: bcrypt.hash('adminbaru456', 10)
+--   Ganti hash di bawah dengan hasil generate Anda sendiri!
+-- ─────────────────────────────────────────────
+-- INSERT INTO users (
+--   id, name, role, status, joined_date, login_code, password_hash
+-- ) VALUES (
+--   'user-admin-2',
+--   'ADM-2026-002',
+--   'Nama Admin Kedua',
+--   'admin2@hadirku.id',
+--   'admin',
+--   '0811-0000-0000',
+--   'active',
+--   '2026-09-24',
+--   '20000002',
+--   '$2b$10$GANTI_DENGAN_HASH_BCRYPT_YANG_VALID_DARI_NODE_JS_COMMAND'
+-- )
+-- ON DUPLICATE KEY UPDATE
+--   name = VALUES(name), role = VALUES(role), password_hash = VALUES(password_hash);
+
+-- ─────────────────────────────────────────────
+-- CEK: Lihat semua user yang ada di database
+-- ─────────────────────────────────────────────
+-- SELECT id, nim, name, role, login_code, status FROM absensi_db.users ORDER BY role;
+
+-- ─────────────────────────────────────────────
+-- RESET PASSWORD admin (ganti hash sesuai password baru):
+-- ─────────────────────────────────────────────
+-- UPDATE absensi_db.users
+-- SET password_hash = '$2b$10$HASH_BARU_DI_SINI'
+-- WHERE login_code = '10101010';
