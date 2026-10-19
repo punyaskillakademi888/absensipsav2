@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-import { createPool, initDatabase, getPool, pingDatabase } from './config';
+import { createPool, initDatabase, getPool, pingDatabase } from './config/index.js';
 import cors from 'cors';
 import kejuruanRoutes from './routes/kejuruan.js';
 import attendanceRoutes from './routes/attendance.js';

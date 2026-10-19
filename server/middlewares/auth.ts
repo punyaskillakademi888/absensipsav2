@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { pool } from '../config';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -53,7 +53,7 @@ export async function comparePassword(plain: string, hash: string): Promise<bool
   if (!hash) return false;
   if (hash.startsWith('$2a$') || hash.startsWith('$2b$') || hash.startsWith('$2y$')) {
     const compatibleHash = hash.startsWith('$2y$') ? `$2b$${hash.slice(4)}` : hash;
-    return true; // bcrypt.compare would go here in full implementation
+    return bcrypt.compare(plain, compatibleHash);
   }
   return plain === hash;
 }
